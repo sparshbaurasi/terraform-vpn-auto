@@ -1,0 +1,7 @@
+client_vpn_description="Client VPN"
+server_certificate_arn="server_arn"
+client_cidr_block="10.0.0.0/22"
+root_certificate_chain_arn="client_arn"
+vpc_id="vpc-076eb55458a972272"
+subnet_id="subnet-0a007b904b5e35448"
+target_network_cidr="10.0.0.0/16"
