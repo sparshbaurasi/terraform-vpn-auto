@@ -37,3 +37,4 @@ easy-rsa
 pki
 client_arn
 server_arn
+client_name

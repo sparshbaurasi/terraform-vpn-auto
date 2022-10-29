@@ -3,6 +3,7 @@ then
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 echo $DIR
 #ServerFile Creation
+cd $DIR
 if aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep server;
 then 
 echo "Server Certificate Already Uploaded to ACM"
@@ -46,13 +47,25 @@ truncate -s-1 server_arn
 aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $1 | cut -f1 > client_arn
 truncate -s-1 client_arn
 
+endpoint=$(aws ec2 describe-client-vpn-endpoints --query 'ClientVpnEndpoints[?not_null(Tags[?Value == `'$3'`].Value)].ClientVpnEndpointId' --output text)
 if [ $3 = "terraform" ]; then
     aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $1 | cut -f2 > client_name
+    truncate -s-1 client_name
     terraform init
     terraform plan
     terraform apply -auto-approve
+elif [ $2 = "ADD" && ! -z $endpoint ]; then
+    aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${endpoint} --output text > client_$1.ovpn
+    printf "\n<cert>" >> client_$1.ovpn
+    printf "\n`cat vpn-bash/acm/$1.crt`" >> client_$1.ovpn
+    printf "\n</cert>" >> client_$1.ovpn
+    printf "\n<key>" >> client_$1.ovpn
+    printf "\n`cat vpn-bash/acm/$1.key`" >> client_$1.ovpn
+    printf "\n</key>" >> client_$1.ovpn
+elif [ $2 = "DELETE" ]; then
+    echo "Trying to Delete"
 else
-    aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > first_user.ovpn
+    echo 'Enter a valid operation'
 fi
 else
     echo 'Error: Got '$#' Minimum 3 Arguments are Required' >&2
