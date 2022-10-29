@@ -2,6 +2,9 @@ resource "aws_ec2_client_vpn_endpoint" "client-vpn-ep" {
   description            = var.client_vpn_description
   server_certificate_arn = file(var.server_certificate_arn)
   client_cidr_block      = var.client_cidr_block
+    provisioner "local-exec" {
+    command = "aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > first_user.ovpn"
+  }
 
   authentication_options {
     type                       = "certificate-authentication"
@@ -38,4 +41,3 @@ resource "aws_ec2_client_vpn_authorization_rule" "example-ingress" {
 #   destination_cidr_block = var.destination_cidr_block
 #   target_vpc_subnet_id   = var.target_vpc_subnet_id
 # }
-

@@ -1,9 +1,11 @@
+if (($# >= 3)); 
+then    
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 echo $DIR
 #ServerFile Creation
 if aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep server;
 then 
-echo "Server File Exist"
+echo "Server Certificate Already Uploaded to ACM"
 else
 cd $DIR
 git clone https://github.com/OpenVPN/easy-rsa.git 
@@ -44,6 +46,14 @@ truncate -s-1 server_arn
 aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $1 | cut -f1 > client_arn
 truncate -s-1 client_arn
 
-# terraform init
-# terraform plan
-# terraform apply
+if [ $3 = "terraform" ]; then
+    terraform init
+    terraform plan
+    terraform apply -auto-approve
+else
+    aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > first_user.ovpn
+fi
+else
+    echo 'Got '$#' Minimum 3 Arguments are Required' >&2
+    exit 5
+fi
