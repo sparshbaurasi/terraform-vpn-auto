@@ -47,6 +47,7 @@ aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,Domai
 truncate -s-1 client_arn
 
 if [ $3 = "terraform" ]; then
+    aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $1 | cut -f2 > client_name
     terraform init
     terraform plan
     terraform apply -auto-approve
@@ -54,6 +55,6 @@ else
     aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > first_user.ovpn
 fi
 else
-    echo 'Got '$#' Minimum 3 Arguments are Required' >&2
+    echo 'Error: Got '$#' Minimum 3 Arguments are Required' >&2
     exit 5
 fi

@@ -3,7 +3,15 @@ resource "aws_ec2_client_vpn_endpoint" "client-vpn-ep" {
   server_certificate_arn = file(var.server_certificate_arn)
   client_cidr_block      = var.client_cidr_block
     provisioner "local-exec" {
-    command = "aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > first_user.ovpn"
+    command = <<-EOT
+    aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > first_user.ovpn
+    printf "\n<cert>" >> first_user.ovpn
+    printf "\n`cat vpn-bash/acm/`cat client_arn`.crt`" >> first_user.ovpn
+    printf "\n</cert>" >> first_user.ovpn
+    printf "\n<key>" >> first_user.ovpn
+    printf "\n`cat vpn-bash/acm/`cat client_arn`.key`" >> first_user.ovpn
+    printf "\n</key>" >> first_user.ovpn
+    EOT
   }
 
   authentication_options {
@@ -19,25 +27,14 @@ resource "aws_ec2_client_vpn_endpoint" "client-vpn-ep" {
   
 }
 
-resource "aws_ec2_client_vpn_network_association" "example-na-1" {
+resource "aws_ec2_client_vpn_network_association" "network_association" {
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.client-vpn-ep.id
   subnet_id              = var.subnet_id
 }
 
-# resource "aws_ec2_client_vpn_network_association" "example-na-2" {
-#   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.client-vpn-ep.id
-#   subnet_id              = var.assoc_subnet_id_2
-# }
 
-
-resource "aws_ec2_client_vpn_authorization_rule" "example-ingress" {
+resource "aws_ec2_client_vpn_authorization_rule" "authorization_rule" {
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.client-vpn-ep.id
   target_network_cidr    = var.target_network_cidr
   authorize_all_groups   = true
 }
-
-# resource "aws_ec2_client_vpn_route" "example-rtb-1" {
-#   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.client-vpn-ep.id
-#   destination_cidr_block = var.destination_cidr_block
-#   target_vpc_subnet_id   = var.target_vpc_subnet_id
-# }

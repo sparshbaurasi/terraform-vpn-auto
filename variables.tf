@@ -20,3 +20,6 @@ variable "subnet_id" {
 variable "target_network_cidr" {
   
 }
+variable "client" {
+  
+}
