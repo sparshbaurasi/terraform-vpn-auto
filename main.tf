@@ -2,6 +2,10 @@ resource "aws_ec2_client_vpn_endpoint" "client-vpn-ep" {
   description            = var.client_vpn_description
   server_certificate_arn = file(var.server_certificate_arn)
   client_cidr_block      = var.client_cidr_block
+
+  tags = {
+      Name        = var.vpn_name
+    }
     provisioner "local-exec" {
     command = <<-EOT
     aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > first_user.ovpn
