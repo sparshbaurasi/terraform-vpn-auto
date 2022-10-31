@@ -1,4 +1,4 @@
-if (($# >= 3)); 
+if (($# >= 2)); 
 then    
     DIR="$( cd "$( dirname "$0" )" && pwd )"
     echo $DIR
@@ -33,8 +33,8 @@ then
         echo 'User added'
     elif [ $2 = "DELETE" ]; then
         ./easy-rsa/easyrsa3/easyrsa revoke $1
-        aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $1 | cut -f1 > arn_to_delete
-        aws acm delete-certificate --certificate-arn `cat arn`
+        arn_to_delete=$(aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $1 | cut -f1)
+        aws acm delete-certificate --certificate-arn $arn_to_delete
         echo 'User deleted'
     else
         echo 'Enter a valid operation'
@@ -66,6 +66,6 @@ then
         echo 'Enter a valid operation'
     fi
 else
-    echo 'Error: Got '$#' Minimum 3 Arguments are Required' >&2
+    echo 'Error: Got '$#' Minimum 2 Arguments are Required' >&2
     exit 5
 fi
