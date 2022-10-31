@@ -48,6 +48,7 @@ then
             echo 'User deleted'
         else
             echo 'No client certificate with '$1
+        fi
     else
         echo 'Enter a valid operation'
     fi
