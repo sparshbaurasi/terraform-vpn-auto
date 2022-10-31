@@ -14,7 +14,7 @@ Note : The above command is specifically for users who want to create clientvpn 
  - At Index 3 - We need to specify "terraform" if you dont have any server already on AWS Running and If already have ClientVPN running on AWS                             please provide name of the ClientVPN Server that will help to Download ClientConfig file on local machine
 ## Some Example Commands
 ```
-./vpn-bash/vpn-rsa.sh example-clientname.com DELETE
+./vpn-bash/vpn-rsa.sh example-clientname.com DELETE prodvpn-ep
 ./vpn-bash/vpn-rsa.sh example-clientname1.com ADD example-vpn-ep
 ./vpn-bash/vpn-rsa.sh example-clientname2.com ADD prodvpn-ep
 ```
