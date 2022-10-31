@@ -2,6 +2,7 @@
 Note : Make sure you are inside repo folder created on local machine
 
 ## If you want to create server and client file with terraform use the below command
+Server Name is set to "server" by Default. If you want to change serve name it can be changed by changing variable value in PATH: vpn-bash/vpn-rsa.sh
 ```
 ./vpn-bash/vpn-rsa.sh example-clientname.com ADD terraform
 ```
