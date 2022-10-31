@@ -3,7 +3,7 @@ Note : Make sure you are inside repo folder created on local machine
 
 ## If you want to create server and client file with terraform use the below command
 ```
-./vpn_bash/vpn_rsa.sh clientname.com ADD terraform
+./vpn_bash/vpn_rsa.sh example-clientname.com ADD terraform
 ```
 - Explaination : 
  - At Index 0 - We are trying to run bash script inside vpn_bash folder
