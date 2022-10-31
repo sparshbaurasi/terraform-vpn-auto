@@ -11,11 +11,11 @@ resource "aws_ec2_client_vpn_endpoint" "client-vpn-ep" {
     aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > first_user.ovpn
     printf "\n<cert>\n" >> first_user.ovpn
     client_name=`cat client_name`
-    cat vpn-bash/acm/$client_name.crt >> first_user.ovpn
-    printf "</cert>\n" >> first_user.ovpn
-    printf "\n<key>\n" >> first_user.ovpn
-    cat vpn-bash/acm/$client_name.key >> first_user.ovpn
-    printf "</key>" >> first_user.ovpn
+    cat vpn-bash/acm/$client_name.crt >> $client_name.ovpn
+    printf "</cert>\n" >> $client_name.ovpn
+    printf "\n<key>\n" >> $client_name.ovpn
+    cat vpn-bash/acm/$client_name.key >> $client_name.ovpn
+    printf "</key>" >> $client_name.ovpn
     EOT
   }
 
