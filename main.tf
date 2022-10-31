@@ -8,9 +8,9 @@ resource "aws_ec2_client_vpn_endpoint" "client-vpn-ep" {
     }
     provisioner "local-exec" {
     command = <<-EOT
-    aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > first_user.ovpn
-    printf "\n<cert>\n" >> first_user.ovpn
     client_name=`cat client_name`
+    aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id ${self.id} --output text > $client_name.ovpn
+    printf "\n<cert>\n" >> $client_name.ovpn
     cat vpn-bash/acm/$client_name.crt >> $client_name.ovpn
     printf "</cert>\n" >> $client_name.ovpn
     printf "\n<key>\n" >> $client_name.ovpn

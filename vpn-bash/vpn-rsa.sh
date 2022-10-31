@@ -1,5 +1,5 @@
 servername=manthanserver           #Can be changed according to user requirement
-if (($# >= 2)); 
+if (($# >= 3); 
 then    
     DIR="$( cd "$( dirname "$0" )" && pwd )"
     echo $DIR
@@ -7,7 +7,7 @@ then
     cd $DIR
     if aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $servername;
     then
-        aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $servername | cut -f1 > server_arn
+        # aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $servername | cut -f1 > server_arn
         echo "Server Certificate Already Uploaded to ACM"
         git clone https://github.com/OpenVPN/easy-rsa.git
     else
@@ -36,14 +36,14 @@ then
             ./easy-rsa/easyrsa3/easyrsa build-client-full $1 nopass
             cp pki/issued/$1.crt acm
             cp pki/private/$1.key acm
-            aws acm import-certificate --certificate fileb://acm/$1.crt --private-key fileb://acm/$1.key --certificate-chain fileb://acm/ca.crt && echo -e "\nUser added'
+            aws acm import-certificate --certificate fileb://acm/$1.crt --private-key fileb://acm/$1.key --certificate-chain fileb://acm/ca.crt && echo -e "\nUser added"
         fi
     elif [[ $2 == "DELETE" ]]; then
         if aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $1;
         then
             ./easy-rsa/easyrsa3/easyrsa revoke $1
             arn_to_delete=$(aws acm list-certificates --query CertificateSummaryList[].[CertificateArn,DomainName]   --output text | grep $1 | cut -f1)
-            aws acm delete-certificate --certificate-arn $arn_to_delete && echo -e "\nUser deleted'
+            aws acm delete-certificate --certificate-arn $arn_to_delete && echo -e "\nUser deleted"
             ./easy-rsa/easyrsa3/easyrsa gen-crl
         else
             echo 'No client certificate with '$1
@@ -78,11 +78,11 @@ then
         printf "\n</key>" >> client_$1.ovpn
         echo "Please check file with name client_"$1".ovpn in your dir"
     elif [[ $2 = "DELETE" ]]; then
-        aws ec2 import-client-vpn-client-certificate-revocation-list --certificate-revocation-list file:pki/crl.pem --client-vpn-endpoint-id ${endpoint} && echo -e "\nUpdated CRL File"
+        aws ec2 import-client-vpn-client-certificate-revocation-list --certificate-revocation-list file://$DIR/pki/crl.pem --client-vpn-endpoint-id ${endpoint} && echo -e "\nUpdated CRL File"
     else
         echo 'Enter a valid operation'
     fi
 else
-    echo 'Error: Got '$#' Minimum 2 Arguments are Required' >&2
+    echo 'Error: Got '$#' Minimum 3 Arguments are Required' >&2
     exit 5
 fi
