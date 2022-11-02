@@ -1,3 +1,4 @@
+#!/bin/bash
 servername=manthanserver           #Can be changed according to user requirement
 if (($# >= 3)); 
 then    
